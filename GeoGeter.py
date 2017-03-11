@@ -4,6 +4,7 @@ from urllib import request, parse
 from os import path
 from myconfig import my_token
 from myconfig import APIURL
+import xlwt
 
 
 def getvilliageFromSheets(sheetname, index_sheet, index_town, index_villiage, br=0, er=None):
@@ -43,9 +44,8 @@ def getVilliageInfoFromWeb(vils):
     return vils
 
 
-def saveVilInfoInFile(filename, vils):
-    print(len(vils))
-    if path.exists(filename):
+def saveVilInfoInFile(filename, vils, overwrite=False):
+    if path.exists(filename) and not overwrite:
         raise ValueError
     else:
         with open(filename, 'w+') as f:
@@ -80,7 +80,33 @@ def getVilFromDataFile(filename):
             vils.append(villiage.getVilFromString(eachline.strip()))
     for eachvil in vils:
         eachvil.setDict()
-        print(eachvil.name, eachvil.longitude)
+    return vils
+
+
+def SaveVilsTotxtByAttr(vals, filename, overwriteflag, *attr):
+    if path.exists(filename) and not overwriteflag:
+        raise ValueError("File have already exist")
+    else:
+        saverstr = "%-15s" * len(attr) + "\n"
+        with open(filename, 'w+') as f:
+            f.write(saverstr % tuple(attr))
+            for each in vals:
+                attrstr = list(map(lambda x: getattr(each, x), attr))
+                f.write(saverstr % tuple(attrstr))
+
+
+def saveVilsToExcelByAttr(vals, filename, overwriteflag, *attr):
+    if path.exists(filename) and not overwriteflag:
+        raise ValueError("File have already exist")
+    f = xlwt.Workbook()
+    sheet = f.add_sheet("sheet1", cell_overwrite_ok=True)
+    for col in range(len(attr)):
+        sheet.write(0, col, attr[col])
+    for row in range(len(vals)):
+        attrstr = list(map(lambda x: getattr(vals[row], x), attr))
+        for eachc in range(len(attrstr)):
+            sheet.write(1 + row, eachc, attrstr[eachc])
+    f.save(filename)
 
 
 """
@@ -89,8 +115,10 @@ def getVilFromDataFile(filename):
 
 
 def test():
-    #getvilliageInfotofile()
-    getVilFromDataFile("test.txt")
+    # getvilliageInfotofile()
+    vals = getVilFromDataFile("data2.txt")
+    # SaveVilsTotxtByAttr(vals, "res.txt", True, "town", "name", "longitude", "latitude", "isConfirm")
+    saveVilsToExcelByAttr(vals, "res2.xls", True, "town", "name", "longitude", "latitude", "isConfirm")
 
 
 """

@@ -11,6 +11,7 @@ class villiage(object):
         self.longitude = ""
         self.latitude = ""
         self._jsondict = None
+        self.isConfirm = True
 
     def __str__(self):
         return 'Villiage:%5s Town:%5s Count:%5s City:%s' % (self.name, self.town, self.county, self.city)
@@ -35,9 +36,14 @@ class villiage(object):
             return
         if self._jsondict["status"] == "0":
             return
+        self._atuoSetlocation()
+
+    def _atuoSetlocation(self):
         location = self._jsondict["geocodes"][0]["location"].split(',')
         self.longitude = location[0]
         self.latitude = location[1]
+        if self._jsondict["geocodes"][0]["level"] != "村庄":
+            self.isConfirm = False
 
     @classmethod
     def getVilFromString(cls, vilstr, sep="***"):
