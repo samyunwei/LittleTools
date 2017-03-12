@@ -1,7 +1,7 @@
 import json
 
 
-class villiage(object):
+class village(object):
     """
     this is the class for save villiage.It was inited by value.
     """
@@ -68,4 +68,4 @@ class villiage(object):
         :return:
         """
         temp = vilstr.split(sep)
-        return villiage(temp[0], temp[1], temp[2], temp[3], temp[4])
+        return village(temp[0], temp[1], temp[2], temp[3], temp[4])

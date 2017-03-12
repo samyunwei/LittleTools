@@ -1,5 +1,5 @@
 import xlrd
-from villiage import villiage
+from village import village
 from urllib import request, parse
 from os import path
 import xlwt
@@ -7,14 +7,19 @@ from myconfig import my_token
 from myconfig import APIURL
 from myconfig import Searcg_County, Search_City
 
+__doc__ = """
+The tools for get villages Geo Info.
+the token,url,county and city are in your choice.
+"""
 
-def getvilliageFromSheets(sheetname, index_sheet, index_town, index_villiage, br=0, er=None):
+
+def getvillageFromSheets(sheetname, index_sheet, index_town, index_village, br=0, er=None):
     """
     get vils from execl.
     :param sheetname:vils sheet name
     :param index_sheet: vil's sheet index
     :param index_town: vil' town name
-    :param index_villiage: vil's index
+    :param index_village: vil's index
     :param br: the index for begin row
     :param er: the index for end row
     :return: vils
@@ -26,10 +31,10 @@ def getvilliageFromSheets(sheetname, index_sheet, index_town, index_villiage, br
         er = table.nrows
     for i in range(br, er):
         row = table.row(i)
-        vilname = row[index_villiage].value.strip().replace(" ", "")
+        vilname = row[index_village].value.strip().replace(" ", "")
         if "村" not in vilname:
             vilname += "村"
-        newvi = villiage(vilname, row[index_town].value.strip())
+        newvi = village(vilname, row[index_town].value.strip())
         res.append(newvi)
     return res
 
@@ -38,7 +43,7 @@ def getSearchStrByTarget(target, token=my_token):
     """
 
     :param target:
-    :type target:villiage
+    :type target:village
     :return:
     """
     tardict = target.getSerachDict()
@@ -46,7 +51,7 @@ def getSearchStrByTarget(target, token=my_token):
     return APIURL % parse.urlencode(tardict)
 
 
-def getVilliageInfoFromWeb(vils):
+def getVillageInfoFromWeb(vils):
     """
     Use GAODE API to get JSON info.
     :param vils:the vils to be search
@@ -79,7 +84,7 @@ def saveVilInfoInFile(filename, vils, overwrite=False):
 def setvil(vils, city, county):
     """
     set vils city and county value.
-    :type vil:villiage
+    :type vil:village
     :param city:
     :param county:
     :return:
@@ -99,7 +104,7 @@ def getVilFromDataFile(filename):
     vils = []
     with open(filename, 'r') as f:
         for eachline in f:
-            vils.append(villiage.getVilFromString(eachline.strip()))
+            vils.append(village.getVilFromString(eachline.strip()))
     for eachvil in vils:
         eachvil.setDict()
     return vils
@@ -153,14 +158,14 @@ def saveVilsToExcelByAttr(vals, filename, overwriteflag, *attr):
 
 
 def testvilliageInfotofile():
-    vils = getvilliageFromSheets("data.xlsx", 4, 0, 1, 1)
+    vils = getvillageFromSheets("data.xlsx", 4, 0, 1, 1)
     setvil(vils, Search_City, Searcg_County)
-    getVilliageInfoFromWeb(vils)
+    getVillageInfoFromWeb(vils)
     saveVilInfoInFile("data2.txt", vils)
 
 
 def test():
-    # tetstvilliageInfotofile()
+    # tetstvillageInfotofile()
     # vals = getVilFromDataFile("data2.txt")
     # SaveVilsTotxtByAttr(vals, "res.txt", True, "town", "name", "longitude", "latitude", "isConfirm")
     # saveVilsToExcelByAttr(vals, "res2.xls", True, "town", "name", "longitude", "latitude", "isConfirm")
