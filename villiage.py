@@ -2,6 +2,9 @@ import json
 
 
 class villiage(object):
+    """
+    this is the class for save villiage.It was inited by value.
+    """
     def __init__(self, name, town, county="", city="", geojson=""):
         self.name = name
         self.town = town
@@ -26,12 +29,21 @@ class villiage(object):
         return res
 
     def setDict(self, theJson=None):
+        """
+        When a json was set ,call autoGet.
+        :param theJson:
+        :return:
+        """
         if theJson:
             self.geojson = theJson
         self._jsondict = json.loads(self.geojson)
         self._autoGet()
 
     def _autoGet(self):
+        """
+        the function for calling setting functions.
+        :return:
+        """
         if self._jsondict == None:
             return
         if self._jsondict["status"] == "0":
@@ -48,7 +60,7 @@ class villiage(object):
     @classmethod
     def getVilFromString(cls, vilstr, sep="***"):
         """
-
+        Get vil for string
         :param vilstr:
         :type vilstr:str
         :param sep:
