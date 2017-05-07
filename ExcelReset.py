@@ -1,15 +1,16 @@
-# User: ddsss
+# User: Sam
 # Date: 2017/4/29
 # Time: 下午9:15
+
 import xlrd
 from xlutils.copy import copy
 
 
 def getMaps(file, kindex, vindex):
     """
-    
-    :param file: 
-    :return:
+    This func use for reading map from *.csv
+    :param file: csv file
+    :return:map
     @type file:string
     """
     if not file.endswith(".csv"):
@@ -29,6 +30,11 @@ def getMaps(file, kindex, vindex):
 
 def changetable(fT, rt, wt, pkindex, begr, begc, mapdict):
     """
+    According to ft map change rt
+    :param ft map
+    :param rt the table was filled
+    :param pkindex pk
+    :param mapdict the *.csv map
     :type mapdict dict
     :type rt xlrd.Sheet
     """
@@ -53,8 +59,8 @@ def changetable(fT, rt, wt, pkindex, begr, begc, mapdict):
 def getTableDict(table, pkindex, begrow):
     """
     
-    :param table: 
-    :param pkindex: 
+    :param table: excel sheet
+    :param pkindex:
     :param begrow: 
     :return:
     :type table xlrd.Sheet
@@ -68,15 +74,25 @@ def getTableDict(table, pkindex, begrow):
 
 
 def getTableByIndex(file, index, formatinfo=False):
+    """
+    :param file: xls or xlsx file 
+    :param index:sheet index
+    :param formatinfo: 
+    :return: 
+    """
     data = xlrd.open_workbook(file, formatting_info=formatinfo)
     return data.sheet_by_index(index)
 
 
 def test():
+    """
+    test func
+    :return: 
+    """
     fillmap = getMaps("data/map.csv", 1, 0)
-    ft = getTableByIndex("/Users/ddsss/Desktop/littletools/data/fromone.xlsx", 0)
+    ft = getTableByIndex("fromone.xlsx", 0)
     ft = getTableDict(ft, 1, 2)
-    rb = xlrd.open_workbook("/Users/ddsss/Desktop/littletools/data/lastone.xls", formatting_info=True)
+    rb = xlrd.open_workbook("lastone.xls", formatting_info=True)
     rs = rb.sheet_by_index(0)
     wb = copy(rb)
     ws = wb.get_sheet(0)
@@ -84,5 +100,8 @@ def test():
     wb.save("./res/out2.xls")
 
 
-if __name__ == '__main__':
+def main():
     test()
+
+if __name__ == '__main__':
+    main()
