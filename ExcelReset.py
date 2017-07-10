@@ -20,7 +20,7 @@ def getMaps(file, kindex, vindex):
         with open(file) as f:
             for eachline in f:
                 line = eachline.strip()
-                eachlist = line.split('\t')
+                eachlist = line.split("\t")
                 if len(eachlist) == 2:
                     mapdict[int(eachlist[kindex])] = int(eachlist[vindex])
             return mapdict
@@ -28,7 +28,7 @@ def getMaps(file, kindex, vindex):
         print(e)
 
 
-def changetable(fT, rt, wt, pkindex, begr, begc, mapdict):
+def changetable(fT, rt, wt, pkindexes, begr, begc, mapdict):
     """
     According to ft map change rt
     :param ft map
@@ -43,7 +43,10 @@ def changetable(fT, rt, wt, pkindex, begr, begc, mapdict):
     for row in range(begr, nrows):
         rowvals = rt.row_values(row)
         try:
-            ftvals = fT[rowvals[pkindex]]
+            key = ""
+            for eachindex in pkindexes:
+                key += rowvals[eachindex]
+            ftvals = fT[key]
             if ftvals:
                 for col in range(begc, ncols):
                     try:
@@ -53,10 +56,11 @@ def changetable(fT, rt, wt, pkindex, begr, begc, mapdict):
                     except KeyError:
                         pass
         except KeyError:
+            print("No found Key:" + key)
             pass
 
 
-def getTableDict(table, pkindex, begrow):
+def getTableDict(table, pkindexes, begrow):
     """
     
     :param table: excel sheet
@@ -69,7 +73,12 @@ def getTableDict(table, pkindex, begrow):
     nrows = table.nrows
     for row in range(begrow, nrows):
         rowvalues = table.row_values(row)
-        tablerows[rowvalues[pkindex]] = rowvalues
+        key = ""
+        for eachindex in pkindexes:
+            key += rowvalues[eachindex]
+        if tablerows.__contains__(key):
+            print(key, row)
+        tablerows[key] = rowvalues
     return tablerows
 
 
@@ -90,18 +99,48 @@ def test():
     :return: 
     """
     fillmap = getMaps("data/map.csv", 1, 0)
-    ft = getTableByIndex("fromone.xlsx", 0)
-    ft = getTableDict(ft, 1, 2)
-    rb = xlrd.open_workbook("lastone.xls", formatting_info=True)
+    ft = getTableByIndex("data/土壤对应表.xlsx", 0)
+    ft = getTableDict(ft, [0, 1], 2)
+    ft2 = {}
+    for eachkey in ft:
+        ft2[eachkey.replace("村", "")] = ft[eachkey]
+    rb = xlrd.open_workbook("data/lastone.xls", formatting_info=True)
     rs = rb.sheet_by_index(0)
     wb = copy(rb)
     ws = wb.get_sheet(0)
-    changetable(ft, rs, ws, 1, 1, 3, fillmap)
-    wb.save("./res/out2.xls")
+    changetable(ft, rs, ws, [0, 1], 1, 3, fillmap)
+    changetable(ft2, rs, ws, [0, 1], 1, 3, fillmap)
+    wb.save("./res/out3.xls")
+    print(len(ft.keys()))
+
+
+def demo2():
+    fillmap = getMaps("data/map2.csv", 1, 0)
+    ft = getTableByIndex("data/data2.xls", 0)
+    print(fillmap)
+    ft = getTableDict(ft, [1, 2], 3)
+    ft2 = {}
+    for eachkey in ft:
+        ft2[eachkey.replace("村民委员会", "")] = ft[eachkey]
+    ft3 = {}
+    for eachkey in ft:
+        ft3[eachkey.replace("民委员会", "")] = ft[eachkey]
+
+    print(ft2.keys())
+    rb = xlrd.open_workbook("data/终极表2.xls", formatting_info=True)
+    rs = rb.sheet_by_index(0)
+    wb = copy(rb)
+    ws = wb.get_sheet(0)
+    changetable(ft2, rs, ws, [0, 1], 2, 3, fillmap)
+    changetable(ft3, rs, ws, [0, 1], 2, 3, fillmap)
+    wb.save("./res/out3.xls")
+    print(len(ft.keys()))
 
 
 def main():
-    test()
+    # test()
+    demo2()
+
 
 if __name__ == '__main__':
     main()
