@@ -1,0 +1,11 @@
+.gitignore
+.idea/
+__pycache__/
+res/data.txt
+data/data.xlsx
+res/data2.txt
+myconfig.py
+res/test.txt
+.DS_Store
+data/
+res/
