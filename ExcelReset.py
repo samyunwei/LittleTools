@@ -4,8 +4,8 @@
 
 import xlrd
 from xlutils.copy import copy
-
-
+import os
+import ExcelExtract
 def getMaps(file, kindex, vindex):
     """
     This func use for reading map from *.csv
@@ -137,9 +137,30 @@ def demo2():
     print(len(ft.keys()))
 
 
+def demo3():
+    ft = ExcelExtract.demo2("data/clearData")
+    mapdict = {}
+    ft2 = {}
+    for eachkey in ft:
+        ft2[eachkey + "村"] = ft[eachkey]
+    ft3 = {}
+    for eachkey in ft:
+        ft3[eachkey.replace("村", "")] = ft[eachkey]
+    rb = xlrd.open_workbook("data/data3.xls", formatting_info=True)
+    rs = rb.sheet_by_index(0)
+    wb = copy(rb)
+    ws = wb.get_sheet(0)
+    changetable(ft, rs, ws, [0, 1], 1, 3,mapdict)
+    changetable(ft2, rs, ws, [0, 1], 1, 3, mapdict)
+    changetable(ft3, rs, ws, [0, 1], 1, 3, mapdict)
+    wb.save("./res/roughres.xls")
+    print(len(ft.keys()))
+
+
 def main():
     # test()
-    demo2()
+    #demo2()
+    demo3()
 
 
 if __name__ == '__main__':
